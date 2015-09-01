@@ -1,0 +1,31 @@
+{
+  "name": "Angular text to speech creator",
+  "authors": [
+    "minutephp <dev@minutephp.com>"
+  ],
+  "description": "Simple AngularJS plugin to create speech from text (requires subscription to freetts.com)",
+  "main": "src/js/text-to-speech.js",
+  "keywords": [
+    "angularjs",
+    "tts",
+    "text to speech"
+  ],
+  "license": "MIT",
+  "homepage": "http://www.minutephp.com",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "941a7e92a8",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "941a7e92a8cf0a5972664955516c28d31888ea28"
+  },
+  "_source": "git://github.com/angular-tools/angular-text-to-speech.git",
+  "_target": "*",
+  "_originalSource": "angular-tools/angular-text-to-speech"
+}
