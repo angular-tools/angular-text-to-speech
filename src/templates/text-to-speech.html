@@ -1,15 +1,18 @@
 <div>
     <div class="form-group">
-        <select class="form-control" ng-model="voice" name="" ng-required="true" ng-options="voice.id as voice.label for voice in voices">
+        <select class="form-control" ng-model="settings.lang" name="" ng-required="true" ng-options="voice as voice for voice in voices | filter:langFilter">
             <option value="">Please select one</option>
         </select>
     </div>
     <div class="form-group">
-        <button type="button" class="btn btn-success" ng-disabled="loading || !voice || !text" ng-click="createTTS()">
+        <div class="pull-right">
+            <label class="text-normal"><sup><input type="checkbox" ng-model="settings.show_all"> Show all languages</sup></label>
+        </div>
+        <button type="button" class="btn btn-success" ng-disabled="loading || !settings.lang || !text" ng-click="createTTS()">
             <span ng-show="!loading"><i class="fa fa-bullhorn"></i> Generate speech</span>
             <span ng-show="loading"><i class="fa fa-refresh fa-spin"></i> Generating..</span>
         </button>
 
-        <div audio-player sound="{{sound}}" style="simple" hide-disabled="true"></div>
+        <div audio-player sound="{{sound}}" skin="simple" hide-disabled="true"></div>
     </div>
 </div>

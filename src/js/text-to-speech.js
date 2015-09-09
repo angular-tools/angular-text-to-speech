@@ -6,7 +6,7 @@
     var basePath = currentScriptPath.substring(0, currentScriptPath.lastIndexOf('/') + 1) + '..';
     var baseURL = 'http://www.freetts.com/api';
 
-    angular.module('textToSpeech', [])
+    angular.module('textToSpeech', ['session'])
         .factory('$tts', ['$q', '$timeout', function ($q, $timeout) {
             var ttsService = {};
             var voices = [];
@@ -28,12 +28,12 @@
 
             return ttsService;
         }])
-        .directive('textToSpeech', ['$compile', '$timeout', '$tts', function ($compile, $timeout, $tts) {
+        .directive('textToSpeech', ['$compile', '$timeout', '$tts', '$session', '$notice', function ($compile, $timeout, $tts, $session, $notice) {
             return {
                 restrict: 'A',
                 replace: true,
                 require: 'ngModel',
-                scope: {voice: '=', text: '@', sound: '='},
+                scope: {text: '@'},
                 templateUrl: basePath + '/templates/text-to-speech.html',
                 link: function ($scope, element, attrs, ngModel) {
                     $scope.init = function () {
@@ -46,26 +46,44 @@
                     ngModel.$render = $scope.init;
                 },
                 controller: function ($scope, $element) {
+                    $scope.settings = {};
+
                     $scope.init = function () {
+                        $scope.settings.show_all = $session.cookie('tts_show_all') === 'true';
+
+                        $scope.$watch('settings', function () {
+                            $session.cookie('tts_lang', $scope.settings.lang, 365);
+                            $session.cookie('tts_show_all', $scope.settings.show_all, 365);
+                        }, true);
+
                         $tts.getVoices().then(function (voices) {
-                            $scope.voices = voices;
-                            $scope.voice = voices[0].id;
+                            if (voices && voices.length > 0) {
+                                $scope.voices = voices;
+                                $scope.settings.lang = $session.cookie('tts_lang') || 'English, Britain';
+                            }
                         });
+                    };
+
+                    $scope.langFilter = function (value, index, array) {
+                        return $scope.settings.show_all || /english/i.test(value);
                     };
 
                     $scope.createTTS = function () {
                         $scope.sound = null;
                         $scope.loading = true;
 
-                        $.getJSON(baseURL + '/generate?voice=' + escape($scope.voice) + '&text=' + escape($scope.text) + '&callback=?', function (obj) {
-                            $timeout(function () {
+                        $.getJSON(baseURL + '/generate?voice=' + encodeURIComponent($scope.settings.lang) + '&text=' + encodeURIComponent($scope.text) + '&callback=?', function (obj) {
+                            if (!obj.url) {
+                                $notice.error('The sound file could not be generated at this time. Please try selecting a different voice and try again.');
+                            } else {
                                 $scope.sound = obj.url;
-                                $scope.loading = false;
-                            });
+                            }
+
+                            $timeout(function () { $scope.loading = false; });
                         });
                     };
 
-                    $scope.init();
+                    $timeout($scope.init);
                 }
             };
         }]);
