@@ -1,9 +1,6 @@
 (function () {
     'use strict';
 
-    var scripts = document.getElementsByTagName("script");
-    var currentScriptPath = scripts[scripts.length - 1].src;
-    var basePath = currentScriptPath.substring(0, currentScriptPath.lastIndexOf('/') + 1) + '..';
     var baseURL = 'http://www.freetts.com/api';
 
     angular.module('textToSpeech', ['session'])
@@ -34,7 +31,7 @@
                 replace: true,
                 require: 'ngModel',
                 scope: {text: '@'},
-                templateUrl: basePath + '/templates/text-to-speech.html',
+                templateUrl: '/static/bower_components/angular-text-to-speech/src/templates/text-to-speech.html',
                 link: function ($scope, element, attrs, ngModel) {
                     $scope.init = function () {
                         $scope.sound = ngModel.$viewValue;
