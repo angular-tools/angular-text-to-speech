@@ -1,8 +1,6 @@
 (function () {
     'use strict';
 
-    var baseURL = 'http://www.freetts.com/api';
-
     angular.module('textToSpeech', ['session'])
         .factory('$tts', ['$q', '$timeout', function ($q, $timeout) {
             var ttsService = {};
@@ -14,9 +12,9 @@
                 if (voices.length > 0) {
                     $timeout(function () { deferred.resolve(voices); });
                 } else {
-                    $.getJSON(baseURL + '/voices?type=free&callback=?', function (obj) {
+                    $.getJSON('/tts/voices?callback=?', function (obj) {
                         voices = obj.voices;
-                        $timeout(function () { deferred.resolve(voices); });
+                        $timeout(function () { deferred.resolve(voices);});
                     });
                 }
 
@@ -69,14 +67,16 @@
                         $scope.sound = null;
                         $scope.loading = true;
 
-                        $.getJSON(baseURL + '/generate?voice=' + encodeURIComponent($scope.settings.lang) + '&text=' + encodeURIComponent($scope.text) + '&callback=?', function (obj) {
+                        $.getJSON('/tts/generate?callback=?', {voice: $scope.settings.lang, text: $scope.text}, function (obj) {
                             if (!obj.url) {
                                 $notice.error('The sound file could not be generated at this time. Please try selecting a different voice and try again.');
                             } else {
                                 $scope.sound = obj.url;
                             }
 
-                            $timeout(function () { $scope.loading = false; });
+                            $timeout(function () {
+                                $scope.loading = false;
+                            });
                         });
                     };
 
@@ -85,5 +85,3 @@
             };
         }]);
 })();
-
-
